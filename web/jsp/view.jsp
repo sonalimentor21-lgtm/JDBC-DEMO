@@ -1,75 +1,92 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.Student" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    String role = (String) session.getAttribute("role");
+    boolean isTeacher = "teacher".equals(role);
+%>
 <html>
 <head>
-    <title>Students Directory</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 20px; }
-        .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 950px; margin: 0 auto; }
-        h2 { color: #333; text-align: center; margin-top: 0; margin-bottom: 25px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #2196F3; color: white; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        tr:hover { background-color: #f1f1f1; }
-        .img-cell { text-align: center; }
-        .img-cell img { border-radius: 4px; border: 1px solid #ccc; object-fit: cover; }
-        .footer-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; }
-        .btn { padding: 10px 20px; border-radius: 4px; font-weight: bold; text-decoration: none; display: inline-block; }
-        .btn-back { background-color: #e7e7e7; color: black; }
-        .btn-add { background-color: #4CAF50; color: white; }
-    </style>
+    <title>Registered Students Directory</title>
+    <!-- Tailwind CSS & Bootstrap Integration via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="container">
-    <h2>Registered Student List</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Marks</th>
-            <th style="text-align: center; width: 120px;">Image</th>
-        </tr>
-        </thead>
-        <tbody>
-        <%
-            List<Student> students = (List<Student>) request.getAttribute("studentsList");
-            if (students != null && !students.isEmpty()) {
-                for (Student s : students) {
-        %>
-                <tr>
-                    <td><%= s.getId() %></td>
-                    <td><%= s.getName() %></td>
-                    <td><%= s.getAge() %></td>
-                    <td><%= s.getMarks() %></td>
-                    <td class="img-cell">
-                        <% if (s.getBase64Image() != null) { %>
-                            <img src="data:image/png;base64,<%= s.getBase64Image() %>" width="80" height="80"/>
-                        <% } else { %>
-                            <span style="color: #999; font-style: italic;">No Photo</span>
-                        <% } %>
-                    </td>
-                </tr>
-        <%
-                }
-            } else {
-        %>
-            <tr>
-                <td colspan="5" style="text-align: center; color: #777; font-style: italic;">No student records found in database.</td>
-            </tr>
-        <%
-            }
-        %>
-        </tbody>
-    </table>
+<body class="bg-gray-100 min-h-screen py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Top Navigation -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Student Directory</h1>
+                <p class="text-sm text-gray-500">Official registry records for ABCD Institute</p>
+            </div>
+            <div class="flex gap-4">
+                <a href="student_entry.jsp" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-semibold hover:bg-gray-50 transition duration-150 no-underline">Student Entry</a>
+                <% if (isTeacher) { %>
+                    <a href="dashboard.jsp" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 transition duration-150 no-underline">Teacher Dashboard</a>
+                <% } else { %>
+                    <a href="login.jsp" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 transition duration-150 no-underline">Teacher Login</a>
+                <% } %>
+            </div>
+        </div>
 
-    <div class="footer-nav">
-        <a href="jsp/dashboard.jsp" class="btn btn-back">← Back to Dashboard</a>
-        <a href="jsp/dashboard.jsp" class="btn btn-add">Add New Student</a>
+        <!-- Student Database Table -->
+        <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Photo</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Age</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Course</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Marks</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    <%
+                        List<Student> students = (List<Student>) request.getAttribute("studentsList");
+                        if (students != null && !students.isEmpty()) {
+                            for (Student s : students) {
+                    %>
+                            <tr class="hover:bg-gray-50 transition duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <% if (s.getBase64Image() != null) { %>
+                                        <img src="data:image/png;base64,<%= s.getBase64Image() %>" class="w-12 h-12 rounded-full border border-gray-300 object-cover shadow-sm"/>
+                                    <% } else { %>
+                                        <div class="w-12 h-12 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center text-xs text-gray-400 font-semibold">N/A</div>
+                                    <% } %>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900"><%= s.getId() %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"><%= s.getName() %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= s.getAge() %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= s.getEmail() != null ? s.getEmail() : "" %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-semibold"><%= s.getCourse() != null ? s.getCourse() : "" %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold"><%= s.getMarks() %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <a href="jsp/certificate.jsp?id=<%= s.getId() %>" target="_blank" class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md font-semibold hover:bg-blue-200 text-xs no-underline inline-block transition duration-150">
+                                        Certificate
+                                    </a>
+                                </td>
+                            </tr>
+                    <%
+                            }
+                        } else {
+                    %>
+                        <tr>
+                            <td colspan="8" class="px-6 py-8 text-center text-sm text-gray-500 italic">No student records found in database.</td>
+                        </tr>
+                    <%
+                        }
+                    %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>

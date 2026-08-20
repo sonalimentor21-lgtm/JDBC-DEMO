@@ -25,7 +25,7 @@ public class StudentController extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // List students and forward to view.jsp
+        // List students and forward to view.jsp (viewable by anyone: teacher or student)
         try {
             List<Student> list = studentDAO.getAllStudents();
             request.setAttribute("studentsList", list);
@@ -36,20 +36,20 @@ public class StudentController extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Verify teacher role
-        HttpSession session = request.getSession(false);
-        if (session == null || !"teacher".equals(session.getAttribute("role"))) {
-            response.sendRedirect("jsp/login.jsp?error=Access Denied!");
-            return;
-        }
-
         String action = request.getParameter("action");
+        
         if ("insert".equals(action)) {
+            HttpSession session = request.getSession(false);
+            boolean isTeacher = (session != null && "teacher".equals(session.getAttribute("role")));
+            String redirectTarget = isTeacher ? "jsp/dashboard.jsp" : "jsp/student_entry.jsp";
+
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 String name = request.getParameter("name");
                 int age = Integer.parseInt(request.getParameter("age"));
                 double marks = Double.parseDouble(request.getParameter("marks"));
+                String email = request.getParameter("email");
+                String course = request.getParameter("course");
                 
                 Part filePart = request.getPart("image");
                 byte[] imageBytes = null;
@@ -59,16 +59,17 @@ public class StudentController extends HttpServlet {
                     }
                 }
 
-                Student student = new Student(id, name, age, marks, imageBytes);
+                Student student = new Student(id, name, age, marks, imageBytes, email, course);
                 boolean success = studentDAO.insertStudent(student);
 
                 if (success) {
-                    response.sendRedirect("jsp/dashboard.jsp?msg=success");
+                    response.sendRedirect(redirectTarget + "?msg=success");
                 } else {
-                    response.sendRedirect("jsp/dashboard.jsp?msg=error");
+                    response.sendRedirect(redirectTarget + "?msg=error");
                 }
             } catch (Exception e) {
-                response.sendRedirect("jsp/dashboard.jsp?msg=error&detail=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
+                response.sendRedirect(redirectTarget + "?msg=error&detail=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
+                e.printStackTrace();
             }
         }
     }

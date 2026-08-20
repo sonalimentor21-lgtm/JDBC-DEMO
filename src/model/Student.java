@@ -6,17 +6,21 @@ public class Student {
     private int age;
     private double marks;
     private byte[] image;
-    private String base64Image; // Helper for display in JSP
+    private String base64Image;
+    private String email;
+    private String course;
 
     // Constructors
     public Student() {}
 
-    public Student(int id, String name, int age, double marks, byte[] image) {
+    public Student(int id, String name, int age, double marks, byte[] image, String email, String course) {
         this.id = id;
         this.name = name;
         this.age = age;
         this.marks = marks;
         this.image = image;
+        this.email = email;
+        this.course = course;
     }
 
     // Getters and Setters
@@ -37,4 +41,10 @@ public class Student {
 
     public String getBase64Image() { return base64Image; }
     public void setBase64Image(String base64Image) { this.base64Image = base64Image; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getCourse() { return course; }
+    public void setCourse(String course) { this.course = course; }
 }
